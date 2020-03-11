@@ -1,0 +1,71 @@
+{
+  "name": "extrapolished",
+  "version": "0.0.1",
+  "description": "A library that helps you create viewport-based ExtraPolated values with ease for use with your favorite React css-in-js library.",
+  "main": "dist/extrapolished.cjs.js",
+  "jsnext:main": "dist/extrapolished.esm.js",
+  "module": "dist/extrapolished.esm.js",
+  "browser": {
+    "./dist/extrapolished.esm.js": "./dist/extrapolished.browser.esm.js",
+    "./dist/extrapolished.cjs.js": "./dist/extrapolished.browser.cjs.js"
+  },
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RodrigoQuesadaDev/extrapolished.git"
+  },
+  "files": [
+    "/dist"
+  ],
+  "keywords": [
+    "extrapolation",
+    "interpolation",
+    "react",
+    "css",
+    "css-in-js",
+    "styles",
+    "responsive",
+    "px",
+    "extrapolished"
+  ],
+  "author": "RodrigoDEV",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/RodrigoQuesadaDev/extrapolished/issues"
+  },
+  "homepage": "https://github.com/RodrigoQuesadaDev/extrapolished",
+  "peerDependencies": {
+    "react": ">= ^16.8.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.8.7",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/plugin-proposal-object-rest-spread": "^7.8.3",
+    "@babel/preset-env": "^7.8.7",
+    "@babel/preset-react": "^7.8.3",
+    "@babel/preset-typescript": "^7.8.3",
+    "@rollup/plugin-commonjs": "^11.0.2",
+    "@rollup/plugin-json": "^4.0.2",
+    "@rollup/plugin-node-resolve": "^7.1.1",
+    "@types/hoist-non-react-statics": "^3.3.1",
+    "@types/node": "^13.7.7",
+    "@types/react": "^16.9.23",
+    "hoist-non-react-statics": "^3.3.2",
+    "react": "^16.13.0",
+    "rollup": "^1.32.0",
+    "rollup-plugin-babel": "^4.3.3",
+    "rollup-plugin-sourcemaps": "^0.5.0",
+    "rollup-plugin-typescript2": "^0.26.0",
+    "tslib": "^1.11.1",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "@types/lodash": "^4.14.149",
+    "lodash": "^4.17.15"
+  }
+}
