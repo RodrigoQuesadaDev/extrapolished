@@ -1,6 +1,6 @@
 {
   "name": "extrapolished",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A library that helps you create viewport-based ExtraPolated values with ease for use with your favorite React css-in-js library.",
   "main": "dist/extrapolished.cjs.js",
   "jsnext:main": "dist/extrapolished.esm.js",
