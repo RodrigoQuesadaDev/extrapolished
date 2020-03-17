@@ -1,5 +1,5 @@
 import {RangeDefinition} from './range-definition';
-import {ParameterizedExtrapolation} from './extrapolation';
+import {InternalParameterizedExtrapolation} from './extrapolation';
 import {SamplePoint} from './sample-point';
 
 type TwoPointsExtrapolationArgs = { point0: SamplePoint, point1: SamplePoint, rangeDefinition: RangeDefinition };
@@ -8,7 +8,7 @@ export function twoPointsExtrapolation(
     {
         point0, point1, rangeDefinition
     }: TwoPointsExtrapolationArgs
-): ParameterizedExtrapolation
+): InternalParameterizedExtrapolation
 {
     const [x0, y0] = point0;
     const [x1, y1] = point1;

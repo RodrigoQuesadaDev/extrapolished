@@ -1,4 +1,4 @@
-import {Extrapolation} from './extrapolation';
+import {InternalExtrapolation} from './extrapolation';
 import {RangeEndDefinition, RangeStartDefinition} from './range-definition';
 import {DEFAULT} from './default-values';
 import {singlePointExtrapolation} from './single-point-extrapolation';
@@ -43,7 +43,7 @@ export function _internalExtrapolishedManual(...args: Array<number | SamplePoint
         }
     }
     else {
-        const extrapolations: Extrapolation[] = pointsOrExtrapolations.flatMap((it, i: number) => {
+        const extrapolations: InternalExtrapolation[] = pointsOrExtrapolations.flatMap((it, i: number) => {
             //if last element
             if (i === pointsOrExtrapolations.length - 1) {
                 return isSamplePoint(it) ? [] : it;
@@ -54,7 +54,7 @@ export function _internalExtrapolishedManual(...args: Array<number | SamplePoint
                 return twoPointsExtrapolation({point0: it, point1: nextPoint, rangeDefinition});
             }
             else {
-                const extrapolations: Extrapolation[] = [it];
+                const extrapolations: InternalExtrapolation[] = [it];
                 if (it.lastPoint[0] < nextPoint[0]) {
                     extrapolations.push(twoPointsExtrapolation({
                         point0: it.lastPoint,

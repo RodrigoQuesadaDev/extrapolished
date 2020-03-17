@@ -2,7 +2,7 @@ import {RangeDefinition} from './range-definition';
 
 const rangeDefinition: RangeDefinition = {
     start: 'start-closed',
-    end: 'end-open'
+    end: 'end-closed'
 };
 
 export const DEFAULT = {rangeDefinition};

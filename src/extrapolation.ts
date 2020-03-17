@@ -2,21 +2,21 @@ import {SamplePoint} from './sample-point';
 
 type ExtrapolationInfo = { firstPoint: SamplePoint, lastPoint: SamplePoint };
 
-export type ParameterizedExtrapolation = ExtrapolationInfo & ((x: number) => number);
-export type AutoExtrapolation =
+export type InternalParameterizedExtrapolation = ExtrapolationInfo & ((x: number) => number);
+export type InternalAutoExtrapolation =
     ExtrapolationInfo
     & (() => number)
-    & { parameterizedExtrapolation: ParameterizedExtrapolation };
-export type Extrapolation = ParameterizedExtrapolation | AutoExtrapolation
+    & { parameterizedExtrapolation: InternalParameterizedExtrapolation };
+export type InternalExtrapolation = InternalParameterizedExtrapolation | InternalAutoExtrapolation
 
-export function isExtrapolation(value: any): value is Extrapolation
+export function isExtrapolation(value: any): value is InternalExtrapolation
 {
     return typeof value === 'function' && value.point0 !== undefined;
 }
 
-export function isAutoExtrapolation(extrapolation: Extrapolation): extrapolation is AutoExtrapolation
+export function isAutoExtrapolation(extrapolation: InternalExtrapolation): extrapolation is InternalAutoExtrapolation
 {
     return extrapolation.length === 0;
 }
 
-export const sortExtrapolations = (extrapolations: Extrapolation[]) => extrapolations.sort((e1, e2) => e1.firstPoint[0] - e2.firstPoint[0]);
+export const sortExtrapolations = (extrapolations: InternalExtrapolation[]) => extrapolations.sort((e1, e2) => e1.firstPoint[0] - e2.firstPoint[0]);
