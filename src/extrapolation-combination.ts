@@ -4,7 +4,6 @@ import {
     isAutoExtrapolation,
     sortExtrapolations
 } from './extrapolation';
-import {useMemo} from "react";
 
 export function combine(...extrapolations: InternalExtrapolation[]): InternalParameterizedExtrapolation
 {
@@ -13,7 +12,7 @@ export function combine(...extrapolations: InternalExtrapolation[]): InternalPar
     extrapolations = extrapolations.map(it => isAutoExtrapolation(it) ? it.parameterizedExtrapolation : it);
     sortExtrapolations(extrapolations);
 
-    const extrapolation = (x: number): number => useMemo(() => {
+    const extrapolation = (x: number): number => {
         const indexAfter = extrapolations.findIndex(it => x < it.firstPoint[0]);
 
         const index = (indexAfter !== -1)
@@ -21,7 +20,7 @@ export function combine(...extrapolations: InternalExtrapolation[]): InternalPar
             : (extrapolations.length - 1);
 
         return extrapolations[index](x);
-    }, [x]);
+    };
     extrapolation.firstPoint = extrapolations[0].firstPoint;
     extrapolation.lastPoint = extrapolations[extrapolations.length - 1].lastPoint;
 

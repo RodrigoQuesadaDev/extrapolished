@@ -1,5 +1,5 @@
 import {useWindowDimensions} from './common/use-window-dimensions-hook';
-import {SamplePointOrExtrapolation} from './global-types';
+import {AutoExtrapolation, SamplePointOrExtrapolation} from './global-types';
 import {RangeEndDefinition, RangeStartDefinition} from './range-definition';
 import {_internalExtrapolishedManual} from './extrapolished-manual';
 
@@ -23,5 +23,5 @@ export function extrapolishedViewBased(...args: Array<number | SamplePointOrExtr
 }
 
 //region Types
-export type ViewBasedExtrapolation = () => number;
+export type ViewBasedExtrapolation = AutoExtrapolation;
 //endregion
