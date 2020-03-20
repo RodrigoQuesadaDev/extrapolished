@@ -1,4 +1,4 @@
-import {InternalExtrapolation} from './extrapolation';
+import {InternalExtrapolation, InternalParameterizedExtrapolation} from './extrapolation';
 import {RangeEndDefinition, RangeStartDefinition} from './range-definition';
 import {DEFAULT} from './default-values';
 import {singlePointExtrapolation} from './single-point-extrapolation';
@@ -30,10 +30,10 @@ export function extrapolishedManual(...args: Array<number | SamplePointOrExtrapo
     return _internalExtrapolishedManual(...args);
 }
 
-export function _internalExtrapolishedManual(...args: Array<number | SamplePointOrExtrapolation | SamplePointOrExtrapolation[] | RangeStartDefinition | RangeEndDefinition | undefined>): ManualExtrapolation
+export function _internalExtrapolishedManual(...args: Array<number | SamplePointOrExtrapolation | SamplePointOrExtrapolation[] | RangeStartDefinition | RangeEndDefinition | undefined>): InternalParameterizedExtrapolation
 {
-    return useMemo(() => {
-        let result: ManualExtrapolation;
+    //TODO add back memoization optimization (at this call level)
+        let result: InternalParameterizedExtrapolation;
         const {start, pointsOrExtrapolations, end, speedFactor} = readArgumentsLevel1(...args);
         unmemoizeExtrapolations(pointsOrExtrapolations);
         sortPointsOrExtrapolations(pointsOrExtrapolations);
@@ -80,7 +80,6 @@ export function _internalExtrapolishedManual(...args: Array<number | SamplePoint
             result = combine(...extrapolations);
         }
         return memoize(result);
-    }, flatMapDeep(args as Array<any>));
 }
 
 //region Utils

@@ -1,28 +1,28 @@
 import {useMemo} from "react";
-import {Extrapolation} from "./global-types";
+import {InternalExtrapolation} from "./extrapolation";
 
-type Memoized<E extends Extrapolation> = E & {
+type Memoized<E extends InternalExtrapolation> = E & {
     memoized: true,
     unmemoizedVersion: E
 };
 
-export function memoize<E extends Extrapolation>(extrapolation: E): Memoized<E>
+export function memoize<E extends InternalExtrapolation>(extrapolation: E): Memoized<E>
 {
     if (isMemoized(extrapolation)) {
         return extrapolation;
     }
     else {
-        const memoizedExtrapolation = ((...args: any[]) => useMemo(
-                // @ts-ignore
-                () => extrapolation(...args),
-                args)
-        ) as Memoized<E>;
+        //TODO add back memoize optimization (yeah, don't use useMemo)
+        // @ts-ignore
+        const memoizedExtrapolation = ((...args: any[]) => extrapolation(...args)) as Memoized<E>;
+        memoizedExtrapolation.firstPoint = extrapolation.firstPoint;
+        memoizedExtrapolation.lastPoint = extrapolation.lastPoint;
         memoizedExtrapolation.unmemoizedVersion = extrapolation;
         return memoizedExtrapolation;
     }
 }
 
-export function unmemoize<E extends Extrapolation>(extrapolation: E): E
+export function unmemoize<E extends InternalExtrapolation>(extrapolation: E): E
 {
     if (!isMemoized(extrapolation)) {
         return extrapolation;
@@ -33,7 +33,7 @@ export function unmemoize<E extends Extrapolation>(extrapolation: E): E
 }
 
 
-function isMemoized<E extends Extrapolation>(extrapolation: E): extrapolation is Memoized<E>
+function isMemoized<E extends InternalExtrapolation>(extrapolation: E): extrapolation is Memoized<E>
 {
     return (extrapolation as any).memoized;
 }
