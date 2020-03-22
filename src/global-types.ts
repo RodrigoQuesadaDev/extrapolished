@@ -7,3 +7,5 @@ export type Extrapolation = ParameterizedExtrapolation | AutoExtrapolation
 
 export type SamplePointOrInternalExtrapolation = SamplePoint | InternalExtrapolation;
 export type SamplePointOrExtrapolation = SamplePoint | Extrapolation;
+
+export type WindowSize = { width: number, height: number };

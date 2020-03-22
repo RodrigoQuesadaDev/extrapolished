@@ -3,13 +3,13 @@ import {
     InternalParameterizedExtrapolation,
     isAutoExtrapolation,
     sortExtrapolations
-} from './extrapolation';
+} from '../extrapolation';
 
 export function combine(...extrapolations: InternalExtrapolation[]): InternalParameterizedExtrapolation
 {
     if (extrapolations.length === 0) throw new Error('[combine] At least 1 extrapolation should be passed.');
 
-    extrapolations = extrapolations.map(it => isAutoExtrapolation(it) ? it.parameterizedExtrapolation : it);
+    extrapolations = extrapolations.map(it => isAutoExtrapolation(it) ? it.originalExtrapolation : it);
     sortExtrapolations(extrapolations);
 
     const extrapolation = (x: number): number => {

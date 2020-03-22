@@ -1,4 +1,5 @@
 import {SamplePoint} from './sample-point';
+import {WrappedExtrapolationInfo} from "./utils/extrapolation-wrapping.util";
 
 type ExtrapolationInfo = { firstPoint: SamplePoint, lastPoint: SamplePoint };
 
@@ -6,7 +7,7 @@ export type InternalParameterizedExtrapolation = ExtrapolationInfo & ((x: number
 export type InternalAutoExtrapolation =
     ExtrapolationInfo
     & (() => number)
-    & { parameterizedExtrapolation: InternalParameterizedExtrapolation };
+    & WrappedExtrapolationInfo<InternalParameterizedExtrapolation>
 export type InternalExtrapolation = InternalParameterizedExtrapolation | InternalAutoExtrapolation
 
 export function isExtrapolation(value: any): value is InternalExtrapolation

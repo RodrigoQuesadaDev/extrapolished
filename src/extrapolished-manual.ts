@@ -3,83 +3,83 @@ import {RangeEndDefinition, RangeStartDefinition} from './range-definition';
 import {DEFAULT} from './default-values';
 import {singlePointExtrapolation} from './single-point-extrapolation';
 import {twoPointsExtrapolation} from './two-points-extrapolation';
-import {combine} from './extrapolation-combination';
+import {combine} from './utils/extrapolation-combination.util';
 import {
     ParameterizedExtrapolation,
     SamplePointOrExtrapolation,
     SamplePointOrInternalExtrapolation
 } from './global-types';
 import {isSamplePoint, SamplePoint} from './sample-point';
-import {useMemo} from "react";
-import flatMapDeep from 'lodash/flatMapDeep';
-import {memoize, unmemoize} from "./memoization";
+import {memoizeExtrapolation, unmemoizeExtrapolation} from "./memoization";
+import {memoizeFnArgs} from "./common/memoize-with-function-args-support.util";
 
-export function extrapolishedManual(point: SamplePointOrExtrapolation, speedFactor?: number): ManualExtrapolation ;
-export function extrapolishedManual(point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, end?: RangeEndDefinition): ManualExtrapolation;
-export function extrapolishedManual(point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, end?: RangeEndDefinition): ManualExtrapolation;
-export function extrapolishedManual(point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, end?: RangeEndDefinition): ManualExtrapolation;
-export function extrapolishedManual(point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, point4: SamplePointOrExtrapolation, end?: RangeEndDefinition): ManualExtrapolation;
-export function extrapolishedManual(start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, end?: RangeEndDefinition): ManualExtrapolation;
-export function extrapolishedManual(start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, end?: RangeEndDefinition): ManualExtrapolation;
-export function extrapolishedManual(start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, end?: RangeEndDefinition): ManualExtrapolation;
-export function extrapolishedManual(start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, point4: SamplePointOrExtrapolation, end?: RangeEndDefinition): ManualExtrapolation;
-export function extrapolishedManual(points: SamplePointOrExtrapolation[], end?: RangeEndDefinition): ManualExtrapolation;
-export function extrapolishedManual(start: RangeStartDefinition, points: SamplePointOrExtrapolation[], end?: RangeEndDefinition): ManualExtrapolation;
-export function extrapolishedManual(...args: Array<number | SamplePointOrExtrapolation | SamplePointOrExtrapolation[] | RangeStartDefinition | RangeEndDefinition | undefined>): ManualExtrapolation
+export const extrapolishedManual = memoizeFnArgs(_extrapolishedManual);
+
+function _extrapolishedManual(point: SamplePointOrExtrapolation, speedFactor?: number): ManualExtrapolation ;
+function _extrapolishedManual(point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, end?: RangeEndDefinition): ManualExtrapolation;
+function _extrapolishedManual(point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, end?: RangeEndDefinition): ManualExtrapolation;
+function _extrapolishedManual(point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, end?: RangeEndDefinition): ManualExtrapolation;
+function _extrapolishedManual(point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, point4: SamplePointOrExtrapolation, end?: RangeEndDefinition): ManualExtrapolation;
+function _extrapolishedManual(start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, end?: RangeEndDefinition): ManualExtrapolation;
+function _extrapolishedManual(start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, end?: RangeEndDefinition): ManualExtrapolation;
+function _extrapolishedManual(start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, end?: RangeEndDefinition): ManualExtrapolation;
+function _extrapolishedManual(start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, point4: SamplePointOrExtrapolation, end?: RangeEndDefinition): ManualExtrapolation;
+function _extrapolishedManual(points: SamplePointOrExtrapolation[], end?: RangeEndDefinition): ManualExtrapolation;
+function _extrapolishedManual(start: RangeStartDefinition, points: SamplePointOrExtrapolation[], end?: RangeEndDefinition): ManualExtrapolation;
+function _extrapolishedManual(...args: Array<number | SamplePointOrExtrapolation | SamplePointOrExtrapolation[] | RangeStartDefinition | RangeEndDefinition | undefined>): ManualExtrapolation
 {
     return _internalExtrapolishedManual(...args);
 }
 
 export function _internalExtrapolishedManual(...args: Array<number | SamplePointOrExtrapolation | SamplePointOrExtrapolation[] | RangeStartDefinition | RangeEndDefinition | undefined>): InternalParameterizedExtrapolation
 {
-    //TODO add back memoization optimization (at this call level)
-        let result: InternalParameterizedExtrapolation;
-        const {start, pointsOrExtrapolations, end, speedFactor} = readArgumentsLevel1(...args);
-        unmemoizeExtrapolations(pointsOrExtrapolations);
-        sortPointsOrExtrapolations(pointsOrExtrapolations);
+    let result: InternalParameterizedExtrapolation;
+    const {start, pointsOrExtrapolations, end, speedFactor} = readArgumentsLevel1(...args);
+    unmemoizeExtrapolations(pointsOrExtrapolations);
+    sortPointsOrExtrapolations(pointsOrExtrapolations);
 
-        const rangeDefinition = {
-            start: start || DEFAULT.rangeDefinition.start,
-            end: end || DEFAULT.rangeDefinition.end
-        };
+    const rangeDefinition = {
+        start: start || DEFAULT.rangeDefinition.start,
+        end: end || DEFAULT.rangeDefinition.end
+    };
 
-        if (pointsOrExtrapolations.length === 1) {
-            const pointOrExtrapolation = pointsOrExtrapolations[0];
-            if (isSamplePoint(pointOrExtrapolation)) {
-                result = singlePointExtrapolation({point: pointOrExtrapolation, speedFactor});
-            }
-            else {
-                result = pointOrExtrapolation;
-            }
+    if (pointsOrExtrapolations.length === 1) {
+        const pointOrExtrapolation = pointsOrExtrapolations[0];
+        if (isSamplePoint(pointOrExtrapolation)) {
+            result = singlePointExtrapolation({point: pointOrExtrapolation, speedFactor});
         }
         else {
-            const extrapolations: InternalExtrapolation[] = pointsOrExtrapolations.flatMap((it, i: number) => {
-                //if last element
-                if (i === pointsOrExtrapolations.length - 1) {
-                    return isSamplePoint(it) ? [] : it;
-                }
-
-                const nextPoint: SamplePoint = readNextPoint(pointsOrExtrapolations, i);
-                if (isSamplePoint(it)) {
-                    return twoPointsExtrapolation({point0: it, point1: nextPoint, rangeDefinition});
-                }
-                else {
-                    const extrapolations: InternalExtrapolation[] = [it];
-                    if (it.lastPoint[0] < nextPoint[0]) {
-                        extrapolations.push(twoPointsExtrapolation({
-                            point0: it.lastPoint,
-                            point1: nextPoint,
-                            rangeDefinition
-                        }));
-                    }
-
-                    return extrapolations;
-                }
-            });
-
-            result = combine(...extrapolations);
+            result = pointOrExtrapolation;
         }
-        return memoize(result);
+    }
+    else {
+        const extrapolations: InternalExtrapolation[] = pointsOrExtrapolations.flatMap((it, i: number) => {
+            //if last element
+            if (i === pointsOrExtrapolations.length - 1) {
+                return isSamplePoint(it) ? [] : it;
+            }
+
+            const nextPoint: SamplePoint = readNextPoint(pointsOrExtrapolations, i);
+            if (isSamplePoint(it)) {
+                return twoPointsExtrapolation({point0: it, point1: nextPoint, rangeDefinition});
+            }
+            else {
+                const extrapolations: InternalExtrapolation[] = [it];
+                if (it.lastPoint[0] < nextPoint[0]) {
+                    extrapolations.push(twoPointsExtrapolation({
+                        point0: it.lastPoint,
+                        point1: nextPoint,
+                        rangeDefinition
+                    }));
+                }
+
+                return extrapolations;
+            }
+        });
+
+        result = combine(...extrapolations);
+    }
+    return memoizeExtrapolation(result);
 }
 
 //region Utils
@@ -128,7 +128,7 @@ function sortPointsOrExtrapolations(pointsOrExtrapolations: SamplePointOrInterna
 function unmemoizeExtrapolations(pointsOrExtrapolations: SamplePointOrInternalExtrapolation[])
 {
     pointsOrExtrapolations.forEach((it, i) => {
-        pointsOrExtrapolations[i] = isSamplePoint(it) ? it : unmemoize(it)
+        pointsOrExtrapolations[i] = isSamplePoint(it) ? it : unmemoizeExtrapolation(it)
     });
 }
 

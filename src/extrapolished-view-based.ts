@@ -1,40 +1,46 @@
-import {useWindowDimensions} from './common/use-window-dimensions-hook';
-import {AutoExtrapolation, SamplePointOrExtrapolation} from './global-types';
+import {AutoExtrapolation, SamplePointOrExtrapolation, WindowSize} from './global-types';
 import {RangeEndDefinition, RangeStartDefinition} from './range-definition';
 import {_internalExtrapolishedManual} from './extrapolished-manual';
 import {InternalAutoExtrapolation} from "./extrapolation";
+import {memoizeFnArgs} from "./common/memoize-with-function-args-support.util";
+import {useWindowSize} from "./common/use-window-dimensions-hook";
+import {useCallback} from "react";
+import {wrapExtrapolation} from "./utils/extrapolation-wrapping.util";
 
-export function extrapolishedViewBased(point: SamplePointOrExtrapolation, speedFactor?: number): ViewBasedExtrapolation ;
-export function extrapolishedViewBased(point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, end?: RangeEndDefinition): ViewBasedExtrapolation;
-export function extrapolishedViewBased(point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, end?: RangeEndDefinition): ViewBasedExtrapolation;
-export function extrapolishedViewBased(point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, end?: RangeEndDefinition): ViewBasedExtrapolation;
-export function extrapolishedViewBased(point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, point4: SamplePointOrExtrapolation, end?: RangeEndDefinition): ViewBasedExtrapolation;
-export function extrapolishedViewBased(start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, end?: RangeEndDefinition): ViewBasedExtrapolation;
-export function extrapolishedViewBased(start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, end?: RangeEndDefinition): ViewBasedExtrapolation;
-export function extrapolishedViewBased(start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, end?: RangeEndDefinition): ViewBasedExtrapolation;
-export function extrapolishedViewBased(start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, point4: SamplePointOrExtrapolation, end?: RangeEndDefinition): ViewBasedExtrapolation;
-export function extrapolishedViewBased(points: SamplePointOrExtrapolation[], end?: RangeEndDefinition): ViewBasedExtrapolation;
-export function extrapolishedViewBased(start: RangeStartDefinition, points: SamplePointOrExtrapolation[], end?: RangeEndDefinition): ViewBasedExtrapolation;
-export function extrapolishedViewBased(...args: Array<number | SamplePointOrExtrapolation | SamplePointOrExtrapolation[] | RangeStartDefinition | RangeEndDefinition | undefined>): ViewBasedExtrapolation
-{
-    return _internalExtrapolishedViewBased(...args);
-}
+const _memoizedExtrapolishedViewBased = memoizeFnArgs(_internalExtrapolishedViewBased);
 
-function _internalExtrapolishedViewBased(...args: Array<number | SamplePointOrExtrapolation | SamplePointOrExtrapolation[] | RangeStartDefinition | RangeEndDefinition | undefined>): InternalAutoExtrapolation
+function _internalExtrapolishedViewBased(windowSize: WindowSize, ...args: Array<number | SamplePointOrExtrapolation | SamplePointOrExtrapolation[] | RangeStartDefinition | RangeEndDefinition | undefined>): InternalAutoExtrapolation
 {
     const parameterizedExtrapolation = _internalExtrapolishedManual(...args);
 
-    const autoExtrapolation = () => {
-        const windowDimensions = useWindowDimensions();
-        return parameterizedExtrapolation(windowDimensions.width);
-    };
-    autoExtrapolation.firstPoint = parameterizedExtrapolation.firstPoint;
-    autoExtrapolation.lastPoint = parameterizedExtrapolation.lastPoint;
-    autoExtrapolation.parameterizedExtrapolation = parameterizedExtrapolation;
-
-    return autoExtrapolation;
+    return wrapExtrapolation(parameterizedExtrapolation,
+        original => (() => original(windowSize.width)) as Partial<InternalAutoExtrapolation>
+    );
 }
 
 //region Types
 export type ViewBasedExtrapolation = AutoExtrapolation;
+//endregion
+
+//region Hook
+export function useExtrapolishedViewBased(): ExtrapolishedViewBasedFunction
+{
+    const windowSize = useWindowSize();
+    return useCallback((...args: any[]) => _memoizedExtrapolishedViewBased(windowSize, ...args), [windowSize]);
+}
+
+interface ExtrapolishedViewBasedFunction {
+    (point: SamplePointOrExtrapolation, speedFactor?: number): ViewBasedExtrapolation;
+    (point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, end?: RangeEndDefinition): ViewBasedExtrapolation;
+    (point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, end?: RangeEndDefinition): ViewBasedExtrapolation;
+    (point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, end?: RangeEndDefinition): ViewBasedExtrapolation;
+    (point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, point4: SamplePointOrExtrapolation, end?: RangeEndDefinition): ViewBasedExtrapolation;
+    (start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, end?: RangeEndDefinition): ViewBasedExtrapolation;
+    (start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, end?: RangeEndDefinition): ViewBasedExtrapolation;
+    (start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, end?: RangeEndDefinition): ViewBasedExtrapolation;
+    (start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, point4: SamplePointOrExtrapolation, end?: RangeEndDefinition): ViewBasedExtrapolation;
+    (points: SamplePointOrExtrapolation[], end?: RangeEndDefinition): ViewBasedExtrapolation;
+    (start: RangeStartDefinition, points: SamplePointOrExtrapolation[], end?: RangeEndDefinition): ViewBasedExtrapolation;
+}
+
 //endregion

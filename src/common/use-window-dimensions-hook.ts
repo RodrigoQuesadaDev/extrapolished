@@ -1,13 +1,14 @@
 import {useCallback, useEffect, useState} from 'react';
 import debounce from 'lodash/debounce';
+import {WindowSize} from "../global-types";
 
 const DEBOUNCE_TIME_MS = 500;
 
-export const useWindowDimensions = () => {
-    const [windowDimensions, setWindowDimensions] = useState(readWindowDimensions);
+export const useWindowSize = (): WindowSize => {
+    const [windowSize, setWindowSize] = useState(readWindowSize);
 
     const handleResize = useCallback(debounce(() => {
-        setWindowDimensions(readWindowDimensions());
+        setWindowSize(readWindowSize);
     }, DEBOUNCE_TIME_MS), []);
 
     useEffect(() => {
@@ -16,10 +17,10 @@ export const useWindowDimensions = () => {
         return () => window.removeEventListener(windowEvent, handleResize);
     }, []);
 
-    return windowDimensions;
+    return windowSize;
 };
 
-function readWindowDimensions()
+function readWindowSize()
 {
     return {width: window.innerWidth, height: window.innerHeight};
 }

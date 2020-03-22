@@ -1,39 +1,33 @@
-import {useMemo} from "react";
-import {InternalExtrapolation} from "./extrapolation";
+import {InternalAutoExtrapolation, InternalExtrapolation, isAutoExtrapolation} from "./extrapolation";
+import memoizeOne from "memoize-one";
+import memoize from "fast-memoize";
+import {wrapExtrapolation, WrappedExtrapolation} from "./utils/extrapolation-wrapping.util";
 
-type Memoized<E extends InternalExtrapolation> = E & {
-    memoized: true,
-    unmemoizedVersion: E
+type Memoized<E extends InternalExtrapolation> = WrappedExtrapolation<E> & {
+    memoized: true
 };
 
-export function memoize<E extends InternalExtrapolation>(extrapolation: E): Memoized<E>
+export function memoizeExtrapolation<E extends InternalExtrapolation>(extrapolation: E): Memoized<E>
 {
     if (isMemoized(extrapolation)) {
         return extrapolation;
     }
     else {
-        //TODO add back memoize optimization (yeah, don't use useMemo)
-        // @ts-ignore
-        const memoizedExtrapolation = ((...args: any[]) => extrapolation(...args)) as Memoized<E>;
-        memoizedExtrapolation.firstPoint = extrapolation.firstPoint;
-        memoizedExtrapolation.lastPoint = extrapolation.lastPoint;
-        memoizedExtrapolation.unmemoizedVersion = extrapolation;
-        return memoizedExtrapolation;
+        return wrapExtrapolation<E, Memoized<E>>(extrapolation,
+            original => isAutoExtrapolation(original)
+                ? memoizeOne(original as InternalAutoExtrapolation)
+                : memoize(original as InternalExtrapolation)
+        );
     }
 }
 
-export function unmemoize<E extends InternalExtrapolation>(extrapolation: E): E
+export function unmemoizeExtrapolation<E extends InternalExtrapolation>(extrapolation: E): E
 {
-    if (!isMemoized(extrapolation)) {
-        return extrapolation;
-    }
-    else {
-        return extrapolation.unmemoizedVersion;
-    }
+    return isMemoized(extrapolation) ? extrapolation.originalExtrapolation : extrapolation;
 }
 
 
-function isMemoized<E extends InternalExtrapolation>(extrapolation: E): extrapolation is Memoized<E>
+function isMemoized<E extends InternalExtrapolation>(extrapolation: E): extrapolation is E & Memoized<E>
 {
     return (extrapolation as any).memoized;
 }
