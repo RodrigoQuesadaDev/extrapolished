@@ -4,9 +4,8 @@ import {useExtrapolishedViewBased} from './extrapolished-view-based';
 export {useExtrapolishedViewBased, ViewBasedExtrapolation} from './extrapolished-view-based';
 export {extrapolishedManual, ManualExtrapolation} from './extrapolished-manual';
 export {RangeStartDefinition, RangeEndDefinition} from "./range-definition";
-export {
-    SamplePoint, SimpleSamplePoint, DualSamplePoint, DualValue, asPoints, SamplePointsXAxis, YAxisValue
-} from './sample-values';
+export {SamplePoint, SimpleSamplePoint, DualSamplePoint, DualValue} from './sample-values';
+export {asPoints, SamplePointsXAxis, YAxisValue} from './as-points';
 export type {ParameterizedExtrapolation, AutoExtrapolation, Extrapolation} from './global-types';
 export {createExtrapolishedTools, ExtrapolishedTools, ExFunction} from './extrapolished-tools';
 
@@ -16,7 +15,6 @@ export const useExtrapolished = useExtrapolishedViewBased;
 /*
 TODO
     - Add options argument at the end (i.e. with option singlePointExtrapolationMode: 'constant' or discreteValues: [250, 500, 1200])
-    - Add function to select range of points in AsPoints
     - Being able to address breakpoint ranges would be cool (e.g. SMALL, MID, BIG).
         - Would probably help to define start/end for breakpoints
     - Provide discrete interpolations? (e.g useful for images where it might not be desired to scale them up/down)

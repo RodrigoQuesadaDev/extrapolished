@@ -1,6 +1,6 @@
 import {useCallback} from "react";
 import {AutoExtrapolation, SamplePointsXAxis, useExtrapolished} from "./index";
-import {YAxisValue} from "./sample-values";
+import {YAxisValue} from "./as-points";
 
 export function createExtrapolishedTools(defaultBreakpoints: SamplePointsXAxis): ExtrapolishedTools
 {

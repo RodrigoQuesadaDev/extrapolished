@@ -1,5 +1,3 @@
-import {zip} from 'lodash-es';
-
 export type SamplePoint = SimpleSamplePoint | DualSamplePoint;
 
 export function isSamplePoint(value: any): value is SamplePoint
@@ -48,18 +46,3 @@ export function asTwoSimplePoints(point: SamplePoint): [SimpleSamplePoint, Simpl
     return [point0, point1];
 }
 
-export type SamplePointsXAxis = ((...yAxis: YAxisValue[]) => SamplePoint[]) & { xAxis: number[] };
-
-export type YAxisValue = number | DualValue;
-
-export const asPoints = (...xAxis: number[]): SamplePointsXAxis => {
-
-    const asPointsYAxis = (...yAxis: YAxisValue[]) => {
-        if (xAxis.length !== yAxis.length) throw new Error("[asPoints] 'xAxis' and 'yAxis' should be the same length.");
-
-        return zip(xAxis, yAxis) as SamplePoint[];
-    };
-    asPointsYAxis.xAxis = xAxis;
-
-    return asPointsYAxis;
-};
