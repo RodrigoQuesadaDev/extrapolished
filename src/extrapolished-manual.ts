@@ -1,10 +1,11 @@
 import {InternalExtrapolation, InternalParameterizedExtrapolation} from './extrapolation';
 import {RangeEndDefinition, RangeStartDefinition} from './range-definition';
-import {DEFAULT} from './default-values';
+import {DEFAULT, ExtrapolishedOptions} from './extrapolished-config';
 import {singlePointExtrapolation} from './single-point-extrapolation';
 import {twoPointsExtrapolation} from './two-points-extrapolation';
 import {combine} from './utils/extrapolation-combination.util';
 import {
+    Extrapolation,
     ParameterizedExtrapolation,
     SamplePointOrExtrapolation,
     SamplePointOrInternalExtrapolation
@@ -12,29 +13,42 @@ import {
 import {isSamplePoint, SamplePoint} from './sample-values';
 import {memoizeExtrapolation, unmemoizeExtrapolation} from "./memoization";
 import {memoizeFnArgs} from "./common/memoize-with-function-args-support.util";
+import {merge} from "lodash-es";
+import {constantExtrapolation} from "./constant-extrapolation";
 
 export const extrapolishedManual = memoizeFnArgs(_extrapolishedManual);
 
-function _extrapolishedManual(point: SamplePointOrExtrapolation, slope?: number): ManualExtrapolation;
-function _extrapolishedManual(point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, end?: RangeEndDefinition): ManualExtrapolation;
-function _extrapolishedManual(point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, end?: RangeEndDefinition): ManualExtrapolation;
-function _extrapolishedManual(point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, end?: RangeEndDefinition): ManualExtrapolation;
-function _extrapolishedManual(point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, point4: SamplePointOrExtrapolation, end?: RangeEndDefinition): ManualExtrapolation;
-function _extrapolishedManual(start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, end?: RangeEndDefinition): ManualExtrapolation;
-function _extrapolishedManual(start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, end?: RangeEndDefinition): ManualExtrapolation;
-function _extrapolishedManual(start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, end?: RangeEndDefinition): ManualExtrapolation;
-function _extrapolishedManual(start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, point4: SamplePointOrExtrapolation, end?: RangeEndDefinition): ManualExtrapolation;
-function _extrapolishedManual(points: SamplePointOrExtrapolation[], end?: RangeEndDefinition): ManualExtrapolation;
-function _extrapolishedManual(start: RangeStartDefinition, points: SamplePointOrExtrapolation[], end?: RangeEndDefinition): ManualExtrapolation;
-function _extrapolishedManual(...args: Array<number | SamplePointOrExtrapolation | SamplePointOrExtrapolation[] | RangeStartDefinition | RangeEndDefinition | undefined>): ManualExtrapolation
+function _extrapolishedManual(point: SamplePointOrExtrapolation, options?: Partial<ExtrapolishedOptions>): ManualExtrapolation;
+function _extrapolishedManual(point: SamplePointOrExtrapolation, slope: number, options?: Partial<ExtrapolishedOptions>): ManualExtrapolation;
+function _extrapolishedManual(point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, options?: Partial<ExtrapolishedOptions>): ManualExtrapolation;
+function _extrapolishedManual(point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, end: RangeEndDefinition, options?: Partial<ExtrapolishedOptions>): ManualExtrapolation;
+function _extrapolishedManual(point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, options?: Partial<ExtrapolishedOptions>): ManualExtrapolation;
+function _extrapolishedManual(point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, end: RangeEndDefinition, options?: Partial<ExtrapolishedOptions>): ManualExtrapolation;
+function _extrapolishedManual(point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, options?: Partial<ExtrapolishedOptions>): ManualExtrapolation;
+function _extrapolishedManual(point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, end: RangeEndDefinition, options?: Partial<ExtrapolishedOptions>): ManualExtrapolation;
+function _extrapolishedManual(point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, point4: SamplePointOrExtrapolation, options?: Partial<ExtrapolishedOptions>): ManualExtrapolation;
+function _extrapolishedManual(point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, point4: SamplePointOrExtrapolation, end: RangeEndDefinition, options?: Partial<ExtrapolishedOptions>): ManualExtrapolation;
+function _extrapolishedManual(start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, options?: Partial<ExtrapolishedOptions>): ManualExtrapolation;
+function _extrapolishedManual(start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, end: RangeEndDefinition, options?: Partial<ExtrapolishedOptions>): ManualExtrapolation;
+function _extrapolishedManual(start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, options?: Partial<ExtrapolishedOptions>): ManualExtrapolation;
+function _extrapolishedManual(start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, end: RangeEndDefinition, options?: Partial<ExtrapolishedOptions>): ManualExtrapolation;
+function _extrapolishedManual(start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, options?: Partial<ExtrapolishedOptions>): ManualExtrapolation;
+function _extrapolishedManual(start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, end: RangeEndDefinition, options?: Partial<ExtrapolishedOptions>): ManualExtrapolation;
+function _extrapolishedManual(start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, point4: SamplePointOrExtrapolation, options?: Partial<ExtrapolishedOptions>): ManualExtrapolation;
+function _extrapolishedManual(start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, point4: SamplePointOrExtrapolation, end: RangeEndDefinition, options?: Partial<ExtrapolishedOptions>): ManualExtrapolation;
+function _extrapolishedManual(points: SamplePointOrExtrapolation[], options?: Partial<ExtrapolishedOptions>): ManualExtrapolation;
+function _extrapolishedManual(points: SamplePointOrExtrapolation[], end: RangeEndDefinition, options?: Partial<ExtrapolishedOptions>): ManualExtrapolation;
+function _extrapolishedManual(start: RangeStartDefinition, points: SamplePointOrExtrapolation[], options?: Partial<ExtrapolishedOptions>): ManualExtrapolation;
+function _extrapolishedManual(start: RangeStartDefinition, points: SamplePointOrExtrapolation[], end: RangeEndDefinition, options?: Partial<ExtrapolishedOptions>): ManualExtrapolation;
+function _extrapolishedManual(...args: Array<number | SamplePointOrExtrapolation | SamplePointOrExtrapolation[] | RangeStartDefinition | RangeEndDefinition | Partial<ExtrapolishedOptions> | undefined>): ManualExtrapolation
 {
     return _internalExtrapolishedManual(...args);
 }
 
-export function _internalExtrapolishedManual(...args: Array<number | SamplePointOrExtrapolation | SamplePointOrExtrapolation[] | RangeStartDefinition | RangeEndDefinition | undefined>): InternalParameterizedExtrapolation
+export function _internalExtrapolishedManual(...args: Array<number | SamplePointOrExtrapolation | SamplePointOrExtrapolation[] | RangeStartDefinition | RangeEndDefinition | Partial<ExtrapolishedOptions> | undefined>): InternalParameterizedExtrapolation
 {
     let result: InternalParameterizedExtrapolation;
-    const {start, pointsOrExtrapolations, end, slope} = readArgumentsLevel1(...args);
+    const {start, pointsOrExtrapolations, end, slope, userOptions} = readArgumentsLevel1(...args);
     unmemoizeExtrapolations(pointsOrExtrapolations);
     sortPointsOrExtrapolations(pointsOrExtrapolations);
 
@@ -43,13 +57,17 @@ export function _internalExtrapolishedManual(...args: Array<number | SamplePoint
         end: end || DEFAULT.rangeDefinition.end
     };
 
+    const options = merge(DEFAULT.options, userOptions);
+
     if (pointsOrExtrapolations.length === 1) {
         const pointOrExtrapolation = pointsOrExtrapolations[0];
         if (isExtrapolation(pointOrExtrapolation)) {
             result = pointOrExtrapolation;
         }
         else {
-            result = singlePointExtrapolation({point: pointOrExtrapolation, slope});
+            result = slope === undefined && options.singlePointExtrapolationMode === 'constant'
+                ? constantExtrapolation({point: pointOrExtrapolation})
+                : singlePointExtrapolation({point: pointOrExtrapolation, slope});
         }
     }
     else {
@@ -89,12 +107,13 @@ function readNextPoint(pointsOrExtrapolations: SamplePointOrInternalExtrapolatio
     return isExtrapolation(nextPointOrExtrapolation) ? nextPointOrExtrapolation.start : nextPointOrExtrapolation;
 }
 
-function readArgumentsLevel1(...args: Array<number | SamplePointOrExtrapolation | SamplePointOrExtrapolation[] | RangeStartDefinition | RangeEndDefinition | undefined>)
+function readArgumentsLevel1(...args: Array<number | SamplePointOrExtrapolation | SamplePointOrExtrapolation[] | RangeStartDefinition | RangeEndDefinition | Partial<ExtrapolishedOptions> | undefined>)
 {
     let start: RangeStartDefinition | undefined;
     let pointsOrExtrapolations: SamplePointOrInternalExtrapolation[] = [];
     let end: RangeEndDefinition | undefined;
     let slope: number | undefined;
+    let userOptions: Partial<ExtrapolishedOptions> | undefined;
     args.forEach(value => {
         if (typeof value === 'string') {
             if (value === 'start-open' || value === 'start-closed') {
@@ -108,16 +127,19 @@ function readArgumentsLevel1(...args: Array<number | SamplePointOrExtrapolation 
             slope = value;
         }
         else if (value !== undefined) {
-            if (Array.isArray(value) && !isSamplePoint(value)) {
+            if (isSamplePoint(value) || isExtrapolation(value)) {
+                pointsOrExtrapolations.push(value as SamplePointOrInternalExtrapolation);
+            }
+            else if (Array.isArray(value)) {
                 pointsOrExtrapolations.push(...(value as SamplePointOrInternalExtrapolation[]));
             }
             else {
-                pointsOrExtrapolations.push(value as SamplePointOrInternalExtrapolation);
+                userOptions = value;
             }
         }
     });
 
-    return {start, pointsOrExtrapolations, end, slope};
+    return {start, pointsOrExtrapolations, end, slope, userOptions};
 }
 
 function sortPointsOrExtrapolations(pointsOrExtrapolations: SamplePointOrInternalExtrapolation[])
@@ -134,9 +156,9 @@ function unmemoizeExtrapolations(pointsOrExtrapolations: SamplePointOrInternalEx
 
 const getFirstX = (obj: SamplePointOrInternalExtrapolation) => isExtrapolation(obj) ? obj.start[0] : obj[0];
 
-function isExtrapolation(pointOrExtrapolation: SamplePointOrExtrapolation): pointOrExtrapolation is InternalExtrapolation
+function isExtrapolation(value: SamplePointOrExtrapolation | Partial<ExtrapolishedOptions> | any[]): value is InternalExtrapolation | Extrapolation
 {
-    return typeof pointOrExtrapolation === 'function';
+    return typeof value === 'function';
 }
 
 //endregion

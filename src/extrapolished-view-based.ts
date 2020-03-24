@@ -6,10 +6,11 @@ import {memoizeFnArgs} from "./common/memoize-with-function-args-support.util";
 import {useWindowSize} from "./common/use-window-dimensions-hook";
 import {useCallback} from "react";
 import {wrapExtrapolation} from "./utils/extrapolation-wrapping.util";
+import {ExtrapolishedOptions} from "./extrapolished-config";
 
 const _memoizedExtrapolishedViewBased = memoizeFnArgs(_internalExtrapolishedViewBased);
 
-function _internalExtrapolishedViewBased(windowSize: WindowSize, ...args: Array<number | SamplePointOrExtrapolation | SamplePointOrExtrapolation[] | RangeStartDefinition | RangeEndDefinition | undefined>): InternalAutoExtrapolation
+function _internalExtrapolishedViewBased(windowSize: WindowSize, ...args: Array<number | SamplePointOrExtrapolation | SamplePointOrExtrapolation[] | RangeStartDefinition | RangeEndDefinition | ExtrapolishedOptions | undefined>): InternalAutoExtrapolation
 {
     const parameterizedExtrapolation = _internalExtrapolishedManual(...args);
 
@@ -30,17 +31,28 @@ export function useExtrapolishedViewBased(): ExtrapolishedViewBasedFunction
 }
 
 interface ExtrapolishedViewBasedFunction {
-    (point: SamplePointOrExtrapolation, speedFactor?: number): ViewBasedExtrapolation;
-    (point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, end?: RangeEndDefinition): ViewBasedExtrapolation;
-    (point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, end?: RangeEndDefinition): ViewBasedExtrapolation;
-    (point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, end?: RangeEndDefinition): ViewBasedExtrapolation;
-    (point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, point4: SamplePointOrExtrapolation, end?: RangeEndDefinition): ViewBasedExtrapolation;
-    (start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, end?: RangeEndDefinition): ViewBasedExtrapolation;
-    (start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, end?: RangeEndDefinition): ViewBasedExtrapolation;
-    (start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, end?: RangeEndDefinition): ViewBasedExtrapolation;
-    (start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, point4: SamplePointOrExtrapolation, end?: RangeEndDefinition): ViewBasedExtrapolation;
-    (points: SamplePointOrExtrapolation[], end?: RangeEndDefinition): ViewBasedExtrapolation;
-    (start: RangeStartDefinition, points: SamplePointOrExtrapolation[], end?: RangeEndDefinition): ViewBasedExtrapolation;
+    (point: SamplePointOrExtrapolation, options?: ExtrapolishedOptions): ViewBasedExtrapolation;
+    (point: SamplePointOrExtrapolation, slope: number, options?: ExtrapolishedOptions): ViewBasedExtrapolation;
+    (point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, options?: ExtrapolishedOptions): ViewBasedExtrapolation;
+    (point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, end: RangeEndDefinition, options?: ExtrapolishedOptions): ViewBasedExtrapolation;
+    (point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, options?: ExtrapolishedOptions): ViewBasedExtrapolation;
+    (point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, end: RangeEndDefinition, options?: ExtrapolishedOptions): ViewBasedExtrapolation;
+    (point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, options?: ExtrapolishedOptions): ViewBasedExtrapolation;
+    (point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, end: RangeEndDefinition, options?: ExtrapolishedOptions): ViewBasedExtrapolation;
+    (point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, point4: SamplePointOrExtrapolation, options?: ExtrapolishedOptions): ViewBasedExtrapolation;
+    (point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, point4: SamplePointOrExtrapolation, end: RangeEndDefinition, options?: ExtrapolishedOptions): ViewBasedExtrapolation;
+    (start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, options?: ExtrapolishedOptions): ViewBasedExtrapolation;
+    (start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, end: RangeEndDefinition, options?: ExtrapolishedOptions): ViewBasedExtrapolation;
+    (start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, options?: ExtrapolishedOptions): ViewBasedExtrapolation;
+    (start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, end: RangeEndDefinition, options?: ExtrapolishedOptions): ViewBasedExtrapolation;
+    (start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, options?: ExtrapolishedOptions): ViewBasedExtrapolation;
+    (start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, end: RangeEndDefinition, options?: ExtrapolishedOptions): ViewBasedExtrapolation;
+    (start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, point4: SamplePointOrExtrapolation, options?: ExtrapolishedOptions): ViewBasedExtrapolation;
+    (start: RangeStartDefinition, point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, point3: SamplePointOrExtrapolation, point4: SamplePointOrExtrapolation, end: RangeEndDefinition, options?: ExtrapolishedOptions): ViewBasedExtrapolation;
+    (points: SamplePointOrExtrapolation[], options?: ExtrapolishedOptions): ViewBasedExtrapolation;
+    (points: SamplePointOrExtrapolation[], end: RangeEndDefinition, options?: ExtrapolishedOptions): ViewBasedExtrapolation;
+    (start: RangeStartDefinition, points: SamplePointOrExtrapolation[], options?: ExtrapolishedOptions): ViewBasedExtrapolation;
+    (start: RangeStartDefinition, points: SamplePointOrExtrapolation[], end: RangeEndDefinition, options?: ExtrapolishedOptions): ViewBasedExtrapolation;
 }
 
 //endregion
