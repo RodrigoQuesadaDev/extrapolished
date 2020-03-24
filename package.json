@@ -70,9 +70,9 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
-    "@types/lodash": "^4.14.149",
+    "@types/lodash-es": "^4.17.3",
     "fast-memoize": "^2.5.2",
-    "lodash": "^4.17.15",
+    "lodash-es": "^4.17.15",
     "memoize-one": "^5.1.1"
   }
 }

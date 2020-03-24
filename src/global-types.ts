@@ -1,4 +1,4 @@
-import {SamplePoint} from './sample-point';
+import {SamplePoint} from './sample-values';
 import {InternalExtrapolation} from "./extrapolation";
 
 export type ParameterizedExtrapolation = (x: number) => number;

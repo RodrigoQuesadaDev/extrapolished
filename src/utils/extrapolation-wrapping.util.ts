@@ -15,8 +15,8 @@ export function wrapExtrapolation<O extends InternalExtrapolation, W extends Wra
 ): W
 {
     const wrappedExtrapolation = doWrap(extrapolation);
-    wrappedExtrapolation.firstPoint = extrapolation.firstPoint;
-    wrappedExtrapolation.lastPoint = extrapolation.lastPoint;
+    wrappedExtrapolation.start = extrapolation.start;
+    wrappedExtrapolation.end = extrapolation.end;
     wrappedExtrapolation.originalExtrapolation = extrapolation;
 
     postProcess(wrappedExtrapolation);

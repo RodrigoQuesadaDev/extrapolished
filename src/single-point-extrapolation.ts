@@ -1,14 +1,18 @@
 import {InternalParameterizedExtrapolation} from './extrapolation';
-import {SamplePoint} from './sample-point';
+import {asTwoSimplePoints, SamplePoint} from './sample-values';
+import {constantExtrapolation} from "./constant-extrapolation";
 
-type SinglePointExtrapolationArgs = { point: SamplePoint, speedFactor?: number };
+type SinglePointExtrapolationArgs = { point: SamplePoint, slope?: number };
 
-export function singlePointExtrapolation({point, speedFactor = 1}: SinglePointExtrapolationArgs): InternalParameterizedExtrapolation
+export function singlePointExtrapolation({point, slope = 1}: SinglePointExtrapolationArgs): InternalParameterizedExtrapolation
 {
-    const [x0, y0] = point;
+    const [point0, point1] = asTwoSimplePoints(point);
+    const [x0,] = point0;
+    const y0 = constantExtrapolation({point});
 
-    const extrapolation = (x: number) => speedFactor * x * y0 / x0 + (1 - speedFactor) * y0;
-    extrapolation.firstPoint = extrapolation.lastPoint = point;
+    const extrapolation = (x: number) => slope * (x - x0) + y0(x);
+    extrapolation.start = point0;
+    extrapolation.end = point1;
 
     return extrapolation;
 }

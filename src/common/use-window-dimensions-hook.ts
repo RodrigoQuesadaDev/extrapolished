@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useState} from 'react';
-import debounce from 'lodash/debounce';
+import {debounce} from 'lodash-es';
 import {WindowSize} from "../global-types";
 
 const DEBOUNCE_TIME_MS = 500;

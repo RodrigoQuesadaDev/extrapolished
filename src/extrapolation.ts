@@ -1,7 +1,7 @@
-import {SamplePoint} from './sample-point';
+import {SimpleSamplePoint} from './sample-values';
 import {WrappedExtrapolationInfo} from "./utils/extrapolation-wrapping.util";
 
-type ExtrapolationInfo = { firstPoint: SamplePoint, lastPoint: SamplePoint };
+type ExtrapolationInfo = { start: SimpleSamplePoint, end: SimpleSamplePoint };
 
 export type InternalParameterizedExtrapolation = ExtrapolationInfo & ((x: number) => number);
 export type InternalAutoExtrapolation =
@@ -20,4 +20,4 @@ export function isAutoExtrapolation(extrapolation: InternalExtrapolation): extra
     return extrapolation.length === 0;
 }
 
-export const sortExtrapolations = (extrapolations: InternalExtrapolation[]) => extrapolations.sort((e1, e2) => e1.firstPoint[0] - e2.firstPoint[0]);
+export const sortExtrapolations = (extrapolations: InternalExtrapolation[]) => extrapolations.sort((e1, e2) => e1.start[0] - e2.start[0]);

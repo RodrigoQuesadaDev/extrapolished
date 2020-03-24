@@ -13,7 +13,7 @@ export function combine(...extrapolations: InternalExtrapolation[]): InternalPar
     sortExtrapolations(extrapolations);
 
     const extrapolation = (x: number): number => {
-        const indexAfter = extrapolations.findIndex(it => x < it.firstPoint[0]);
+        const indexAfter = extrapolations.findIndex(it => x < it.start[0]);
 
         const index = (indexAfter !== -1)
             ? (indexAfter > 0 ? (indexAfter - 1) : indexAfter)
@@ -21,8 +21,8 @@ export function combine(...extrapolations: InternalExtrapolation[]): InternalPar
 
         return extrapolations[index](x);
     };
-    extrapolation.firstPoint = extrapolations[0].firstPoint;
-    extrapolation.lastPoint = extrapolations[extrapolations.length - 1].lastPoint;
+    extrapolation.start = extrapolations[0].start;
+    extrapolation.end = extrapolations[extrapolations.length - 1].end;
 
     return extrapolation;
 }
