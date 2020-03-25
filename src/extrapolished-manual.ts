@@ -11,10 +11,11 @@ import {
     SamplePointOrInternalExtrapolation
 } from './global-types';
 import {isSamplePoint, SamplePoint} from './sample-values';
-import {memoizeExtrapolation, unmemoizeExtrapolation} from "./memoization";
+import {memoizeExtrapolation, unmemoizeExtrapolation} from "./memoized-extrapolation";
 import {memoizeFnArgs} from "./common/memoize-with-function-args-support.util";
 import {merge} from "lodash-es";
 import {constantExtrapolation} from "./constant-extrapolation";
+import {asDiscrete} from "./discrete-extrapolation";
 
 export const extrapolishedManual = memoizeFnArgs(_extrapolishedManual);
 
@@ -57,7 +58,7 @@ export function _internalExtrapolishedManual(...args: Array<number | SamplePoint
         end: end || DEFAULT.rangeDefinition.end
     };
 
-    const options = merge(DEFAULT.options, userOptions);
+    const options = merge({}, DEFAULT.options, userOptions);
 
     if (pointsOrExtrapolations.length === 1) {
         const pointOrExtrapolation = pointsOrExtrapolations[0];
@@ -97,6 +98,9 @@ export function _internalExtrapolishedManual(...args: Array<number | SamplePoint
 
         result = combine(...extrapolations);
     }
+
+    if (options.discreteValues.length > 0) result = asDiscrete(result, options.discreteValues);
+
     return memoizeExtrapolation(result);
 }
 

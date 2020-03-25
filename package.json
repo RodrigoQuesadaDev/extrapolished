@@ -73,6 +73,7 @@
     "@types/lodash-es": "^4.17.3",
     "fast-memoize": "^2.5.2",
     "lodash-es": "^4.17.15",
-    "memoize-one": "^5.1.1"
+    "memoize-one": "^5.1.1",
+    "react-use": "^13.27.0"
   }
 }
