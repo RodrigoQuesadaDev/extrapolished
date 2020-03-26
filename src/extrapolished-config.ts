@@ -10,6 +10,10 @@ export const DEFAULT = {
         start: 'start-closed',
         end: 'end-closed'
     } as RangeDefinition,
+    singlePointRangeDefinition: {
+        start: 'start-open',
+        end: 'end-open'
+    } as RangeDefinition,
     options: {
         singlePointExtrapolationMode: 'constant',
         discreteValues: []

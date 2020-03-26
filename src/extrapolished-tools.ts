@@ -51,6 +51,9 @@ export interface UseExFn<DL extends string> {
 
 export type ExFunction<L extends string = never> = ((...yAxis: YAxisValue[]) => AutoExtrapolation) & {
     [P in L]: ExFunction;
+} & {
+    first: ExFunction;
+    last: ExFunction;
 }
 
 function createExFunction(extrapolished: ReturnType<typeof useExtrapolished>, bps: SamplePointsXAxis, options: Partial<ExtrapolishedOptions> | undefined)

@@ -13,14 +13,20 @@ import {
 import {isSamplePoint, SamplePoint} from './sample-values';
 import {memoizeExtrapolation, unmemoizeExtrapolation} from "./memoized-extrapolation";
 import {memoizeFnArgs} from "./common/memoize-with-function-args-support.util";
-import {merge} from "lodash-es";
+import {defaultsDeep} from "lodash-es";
 import {constantExtrapolation} from "./constant-extrapolation";
 import {asDiscrete} from "./discrete-extrapolation";
 
 export const extrapolishedManual = memoizeFnArgs(_extrapolishedManual);
 
 function _extrapolishedManual(point: SamplePointOrExtrapolation, options?: Partial<ExtrapolishedOptions>): ManualExtrapolation;
+function _extrapolishedManual(point: SamplePointOrExtrapolation, end: RangeEndDefinition, options?: Partial<ExtrapolishedOptions>): ManualExtrapolation;
+function _extrapolishedManual(start: RangeStartDefinition, point: SamplePointOrExtrapolation, options?: Partial<ExtrapolishedOptions>): ManualExtrapolation;
+function _extrapolishedManual(start: RangeStartDefinition, point: SamplePointOrExtrapolation, end: RangeEndDefinition, options?: Partial<ExtrapolishedOptions>): ManualExtrapolation;
 function _extrapolishedManual(point: SamplePointOrExtrapolation, slope: number, options?: Partial<ExtrapolishedOptions>): ManualExtrapolation;
+function _extrapolishedManual(point: SamplePointOrExtrapolation, slope: number, end: RangeEndDefinition, options?: Partial<ExtrapolishedOptions>): ManualExtrapolation;
+function _extrapolishedManual(start: RangeStartDefinition, point: SamplePointOrExtrapolation, slope: number, options?: Partial<ExtrapolishedOptions>): ManualExtrapolation;
+function _extrapolishedManual(start: RangeStartDefinition, point: SamplePointOrExtrapolation, slope: number, end: RangeEndDefinition, options?: Partial<ExtrapolishedOptions>): ManualExtrapolation;
 function _extrapolishedManual(point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, options?: Partial<ExtrapolishedOptions>): ManualExtrapolation;
 function _extrapolishedManual(point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, end: RangeEndDefinition, options?: Partial<ExtrapolishedOptions>): ManualExtrapolation;
 function _extrapolishedManual(point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, options?: Partial<ExtrapolishedOptions>): ManualExtrapolation;
@@ -53,12 +59,7 @@ export function _internalExtrapolishedManual(...args: Array<number | SamplePoint
     unmemoizeExtrapolations(pointsOrExtrapolations);
     sortPointsOrExtrapolations(pointsOrExtrapolations);
 
-    const rangeDefinition = {
-        start: start || DEFAULT.rangeDefinition.start,
-        end: end || DEFAULT.rangeDefinition.end
-    };
-
-    const options = merge({}, DEFAULT.options, userOptions);
+    const options = defaultsDeep(userOptions, DEFAULT.options);
 
     if (pointsOrExtrapolations.length === 1) {
         const pointOrExtrapolation = pointsOrExtrapolations[0];
@@ -66,12 +67,16 @@ export function _internalExtrapolishedManual(...args: Array<number | SamplePoint
             result = pointOrExtrapolation;
         }
         else {
+            const rangeDefinition = defaultsDeep({start, end}, DEFAULT.singlePointRangeDefinition);
+
             result = slope === undefined && options.singlePointExtrapolationMode === 'constant'
                 ? constantExtrapolation({point: pointOrExtrapolation})
-                : singlePointExtrapolation({point: pointOrExtrapolation, slope});
+                : singlePointExtrapolation({point: pointOrExtrapolation, slope, rangeDefinition});
         }
     }
     else {
+        const rangeDefinition = defaultsDeep({start, end}, DEFAULT.rangeDefinition);
+
         const extrapolations: InternalExtrapolation[] = pointsOrExtrapolations.flatMap((it, i: number) => {
             //if last element
             if (i === pointsOrExtrapolations.length - 1) {

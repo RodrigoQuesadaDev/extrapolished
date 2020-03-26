@@ -32,7 +32,13 @@ export function useExtrapolishedViewBased(): ExtrapolishedViewBasedFunction
 
 interface ExtrapolishedViewBasedFunction {
     (point: SamplePointOrExtrapolation, options?: Partial<ExtrapolishedOptions>): ViewBasedExtrapolation;
+    (point: SamplePointOrExtrapolation, end: RangeEndDefinition, options?: Partial<ExtrapolishedOptions>): ViewBasedExtrapolation;
+    (start: RangeStartDefinition, point: SamplePointOrExtrapolation, options?: Partial<ExtrapolishedOptions>): ViewBasedExtrapolation;
+    (start: RangeStartDefinition, point: SamplePointOrExtrapolation, end: RangeEndDefinition, options?: Partial<ExtrapolishedOptions>): ViewBasedExtrapolation;
     (point: SamplePointOrExtrapolation, slope: number, options?: Partial<ExtrapolishedOptions>): ViewBasedExtrapolation;
+    (point: SamplePointOrExtrapolation, slope: number, end: RangeEndDefinition, options?: Partial<ExtrapolishedOptions>): ViewBasedExtrapolation;
+    (start: RangeStartDefinition, point: SamplePointOrExtrapolation, slope: number, options?: Partial<ExtrapolishedOptions>): ViewBasedExtrapolation;
+    (start: RangeStartDefinition, point: SamplePointOrExtrapolation, slope: number, end: RangeEndDefinition, options?: Partial<ExtrapolishedOptions>): ViewBasedExtrapolation;
     (point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, options?: Partial<ExtrapolishedOptions>): ViewBasedExtrapolation;
     (point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, end: RangeEndDefinition, options?: Partial<ExtrapolishedOptions>): ViewBasedExtrapolation;
     (point0: SamplePointOrExtrapolation, point1: SamplePointOrExtrapolation, point2: SamplePointOrExtrapolation, options?: Partial<ExtrapolishedOptions>): ViewBasedExtrapolation;

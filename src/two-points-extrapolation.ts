@@ -5,11 +5,7 @@ import {constantExtrapolation} from "./constant-extrapolation";
 
 type TwoPointsExtrapolationArgs = { point0: SamplePoint, point1: SamplePoint, rangeDefinition: RangeDefinition };
 
-export function twoPointsExtrapolation(
-    {
-        point0, point1, rangeDefinition
-    }: TwoPointsExtrapolationArgs
-): InternalParameterizedExtrapolation
+export function twoPointsExtrapolation({point0, point1, rangeDefinition}: TwoPointsExtrapolationArgs): InternalParameterizedExtrapolation
 {
     const x0 = point0[0];
     const y0 = constantExtrapolation({point: point0});
