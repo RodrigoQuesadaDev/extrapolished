@@ -1,4 +1,4 @@
-import {compact, groupBy, map, mapValues, zip} from "lodash-es";
+import {compact, flatMap, groupBy, map, mapValues, zip} from "lodash-es";
 import {DualValue, SamplePoint} from "./sample-values";
 import {LabeledNumber, NumberOrLabeledNumber} from "./labels";
 import memoize from "fast-memoize";
@@ -40,7 +40,7 @@ function _asPoints<L extends string = never>(
 
     const xAxisByLabel = mapValues(
         groupBy(
-            labeledXAxis.flatMap(x => x.labels.map(label => [label, x])),
+            flatMap(labeledXAxis, x => x.labels.map(label => [label, x])),
             pair => pair[0]
         ),
         pairs => pairs.map(pair => pair[1])
@@ -52,7 +52,7 @@ function _asPoints<L extends string = never>(
     asPointsYAxis.last = xAxis[xAxis.length - 1];
 
     asPointsYAxis.select = memoize((...values: Array<number | 'first' | 'last' | L>) => _asPoints(
-        ...(map(compact(values.flatMap(it => {
+        ...(map(compact(flatMap(values, it => {
                 if (it === 'first') {
                     return [labeledXAxis[0]];
                 }

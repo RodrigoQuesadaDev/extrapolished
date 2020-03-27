@@ -13,7 +13,7 @@ import {
 import {isSamplePoint, SamplePoint} from './sample-values';
 import {memoizeExtrapolation, unmemoizeExtrapolation} from "./memoized-extrapolation";
 import {memoizeFnArgs} from "./common/memoize-with-function-args-support.util";
-import {defaultsDeep} from "lodash-es";
+import {defaultsDeep, flatMap} from "lodash-es";
 import {constantExtrapolation} from "./constant-extrapolation";
 import {asDiscrete} from "./discrete-extrapolation";
 
@@ -77,7 +77,7 @@ export function _internalExtrapolishedManual(...args: Array<number | SamplePoint
     else {
         const rangeDefinition = defaultsDeep({start, end}, DEFAULT.rangeDefinition);
 
-        const extrapolations: InternalExtrapolation[] = pointsOrExtrapolations.flatMap((it, i: number) => {
+        const extrapolations: InternalExtrapolation[] = flatMap(pointsOrExtrapolations, (it, i: number) => {
             //if last element
             if (i === pointsOrExtrapolations.length - 1) {
                 return isExtrapolation(it) ? it : [];
