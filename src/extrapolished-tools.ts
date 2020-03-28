@@ -1,8 +1,10 @@
 import {useMemo} from "react";
-import {AutoExtrapolation, ExtrapolishedOptions, SamplePointsXAxis, useExtrapolished} from "./index";
-import {YAxisValue} from "./as-points";
+import {ExtrapolishedOptions} from "./extrapolished-config";
+import {AutoExtrapolation} from "./global-types";
+import {SamplePointsXAxis, YAxisValue} from "./as-points";
 import {defaultTo, mapValues, merge} from "lodash-es";
 import {useDistinct} from "./common/use-distinct";
+import {useExtrapolishedViewBased} from './extrapolished-view-based';
 
 export function createExtrapolishedTools<DL extends string>(defaultBreakpoints: SamplePointsXAxis<DL>, defaultOptions?: Partial<ExtrapolishedOptions>): ExtrapolishedTools<DL>
 {
@@ -14,7 +16,7 @@ export function createExtrapolishedTools<DL extends string>(defaultBreakpoints: 
             options = useMemo(() => merge({}, defaultOptions, options), [options]);
             options = useDistinct(options);
 
-            const extrapolished = useExtrapolished();
+            const extrapolished = useExtrapolishedViewBased();
             return useMemo(() => {
                 const exFunction = createExFunction(extrapolished, bps!, options) as ExFunction<L>;
                 Object.assign(exFunction, mapValues(bps!.select, subBps => createExFunction(extrapolished, subBps, options)));
@@ -56,7 +58,7 @@ export type ExFunction<L extends string = never> = ((...yAxis: YAxisValue[]) => 
     last: ExFunction;
 }
 
-function createExFunction(extrapolished: ReturnType<typeof useExtrapolished>, bps: SamplePointsXAxis, options: Partial<ExtrapolishedOptions> | undefined)
+function createExFunction(extrapolished: ReturnType<typeof useExtrapolishedViewBased>, bps: SamplePointsXAxis, options: Partial<ExtrapolishedOptions> | undefined)
 {
     return (...yAxis: YAxisValue[]) => extrapolished(bps!(...yAxis), options);
 }

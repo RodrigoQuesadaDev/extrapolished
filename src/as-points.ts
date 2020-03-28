@@ -14,7 +14,8 @@ export type SamplePointsXAxis<L extends string = never> = ((...yAxis: YAxisValue
 export type YAxisValue = number | DualValue;
 
 type SelectFnBody<L extends string> =
-    ((...values: Array<number | 'first' | 'last' | L>) => SamplePointsXAxis)
+    ((...values: Array<SelectFnArg<L>>) => SamplePointsXAxis)
+type SelectFnArg<L extends string> = number | 'first' | 'last' | L;
 type SelectFnProps<L extends string> = Record<L | 'first' | 'last', SamplePointsXAxis>;
 type SelectFn<L extends string> = SelectFnBody<L> & SelectFnProps<L>
 type RangeFn = (from: number | 'start', to?: number | 'end') => SamplePointsXAxis
@@ -51,7 +52,7 @@ function _asPoints<L extends string = never>(
     asPointsYAxis.first = xAxis[0];
     asPointsYAxis.last = xAxis[xAxis.length - 1];
 
-    asPointsYAxis.select = memoize((...values: Array<number | 'first' | 'last' | L>) => _asPoints(
+    asPointsYAxis.select = memoize((...values: Array<SelectFnArg<L>>) => _asPoints(
         ...(map(compact(flatMap(values, it => {
                 if (it === 'first') {
                     return [labeledXAxis[0]];
